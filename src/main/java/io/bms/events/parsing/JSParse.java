@@ -26,10 +26,10 @@ public class JSParse {
             scriptEngine.put(material.name(), material);
         }
         // expose entities to JS
-        for(EntityType type : EntityType.values()) {
+        for (EntityType type : EntityType.values()) {
             scriptEngine.put(type.name(), type.getEntityClass());
         }
-        scriptEngine.put("SERVER", EventsMod.getInstance().getServer());
+        scriptEngine.put("SERVER", EventsMod.getInstance().getServer()); // expose server to JS
         scriptEngine.eval(new FileReader(String.format("%s/%s", dataFolder.getAbsolutePath(), EventsMod.script)));
     }
 }
