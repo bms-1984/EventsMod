@@ -174,6 +174,7 @@ public class EventsMod extends JavaPlugin {
                     return true;
                 }
             }
+            reloadConfig();
             try {
                 scriptEngine.eval(new FileReader(String.format("%s/%s", getDataFolder().getAbsolutePath(), EventsMod.script)));
             } catch (ScriptException e) {

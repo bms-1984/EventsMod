@@ -9,7 +9,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 public class EventsConfig {
 
     public static void initConfig(FileConfiguration config)  {
-        config.options().copyDefaults(true);
+
         EventsMod.execTicks = config.getInt("general.executeEveryNTicks");
         EventsMod.script = config.getString("general.script");
     }
