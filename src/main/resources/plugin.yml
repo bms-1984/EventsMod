@@ -2,6 +2,7 @@ name: EventsMod
 version: 1.12
 author: bms_
 main: io.bms.events.EventsMod
+softdepend: [MythicMobs]
 commands:
    runevent:
       description: This command runs an event, either randomly chosen or specified.

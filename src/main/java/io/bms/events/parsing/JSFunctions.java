@@ -30,24 +30,34 @@ public class JSFunctions {
 
     public static void spawnEntity(int worldID, int x, int y, int z, Class<Entity> entity) {
         World world = server.getWorlds().get(worldID);
-        Location location = new Location(world, (double) x, (double) y, (double) z);
-        world.spawn(location, entity);
+        if (world != null) {
+            Location location = new Location(world, (double) x, (double) y, (double) z);
+            world.spawn(location, entity);
+        }
+        else {
+            EventsMod.logger.warning("Could not spawn an entity because the specified world does not exist.");
+        }
     }
 
     public static void spawnMythicEntity(int worldID, int x, int y, int z, String entityName, int level) {
         World world = server.getWorlds().get(worldID);
-        Location location = new Location(world, (double) x, (double) y, (double) z);
-        if (EventsMod.getInstance().getServer().getPluginManager().getPlugin("MythicMobs") == null) {
-            EventsMod.logger.warning("MythicMobs is not present, this feature may not be used.");
-        }
-        else {
-            ActiveMob mob = MythicMobs.inst().getMobManager().spawnMob(entityName, location, level);
-            if (mob == null) {
-                EventsMod.logger.warning("A mythic mob with that name doesn't exist. Check for it with /mm m list.");
+        if (world != null) {
+            Location location = new Location(world, (double) x, (double) y, (double) z);
+            if (EventsMod.getInstance().getServer().getPluginManager().getPlugin("MythicMobs") == null) {
+                EventsMod.logger.warning("MythicMobs is not present, this feature may not be used.");
             }
             else {
-                EventsMod.logger.info(String.format("A mythic mob called %s was spawned.", entityName));
+                ActiveMob mob = MythicMobs.inst().getMobManager().spawnMob(entityName, location, level);
+                if (mob == null) {
+                    EventsMod.logger.warning("A mythic mob with that name doesn't exist. Check for it with /mm m list.");
+                }
+                else {
+                    EventsMod.logger.info(String.format("A mythic mob called %s was spawned.", entityName));
+                }
             }
+        }
+        else {
+            EventsMod.logger.warning("Could not spawn an entity because the specified world does not exist.");
         }
     }
 
@@ -64,22 +74,38 @@ public class JSFunctions {
     // be careful; this does block damage
     public static void explode(int worldID, int x, int y, int z, int radius) {
         World world = server.getWorlds().get(worldID);
-        Location location = new Location(world, (double) x, (double) y, (double) z);
-        world.createExplosion(location, (float) radius);
+        if (world != null) {
+            Location location = new Location(world, (double) x, (double) y, (double) z);
+            world.createExplosion(location, (float) radius);
+        }
+        else {
+            EventsMod.logger.warning("Could not spawn an explosion because the specified world does not exist.");
+        }
     }
 
     public static void moveBlock(int worldID1, int x1, int y1, int z1, int worldID2, int x2, int y2, int z2) {
         World world1 = server.getWorlds().get(worldID1);
         World world2 = server.getWorlds().get(worldID2);
-        Location location1 = new Location(world1, (double) x1, (double) y1, (double) z1);
-        Location location2 = new Location(world2, (double) x2, (double) y2, (double) z2);
-        location2.getBlock().setType(location1.getBlock().getType());
-        location1.getBlock().setType(Material.AIR);
+        if (world1 != null && world2 != null) {
+            Location location1 = new Location(world1, (double) x1, (double) y1, (double) z1);
+            Location location2 = new Location(world2, (double) x2, (double) y2, (double) z2);
+            location2.getBlock().setType(location1.getBlock().getType());
+            location1.getBlock().setType(Material.AIR);
+        }
+        else {
+            EventsMod.logger.warning("Could not spawn an entity because one or both of the specified worlds does not exist.");
+        }
     }
 
     public static void spawnBlock(int worldID, int x, int y, int z, Material block) {
         World world = server.getWorlds().get(worldID);
-        Location location = new Location(world, (double) x, (double) y, (double) z);
-        location.getBlock().setType(block);
+
+        if (world != null) {
+            Location location = new Location(world, (double) x, (double) y, (double) z);
+            location.getBlock().setType(block);
+        }
+        else {
+            EventsMod.logger.warning("Could not spawn an entity because the specified world does not exist.");
+        }
     }
 }
