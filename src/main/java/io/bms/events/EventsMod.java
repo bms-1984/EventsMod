@@ -27,11 +27,9 @@ public class EventsMod extends JavaPlugin {
 
     public static int execTicks;
     public static String script;
-    private FileConfiguration config;
     private static EventsMod instance;
     public static Logger logger;
-    public static BukkitScheduler scheduler;
-    public static String returnedFunctionName;
+    private static String returnedFunctionName;
 
     public static EventsMod getInstance() {
         return instance;
@@ -43,19 +41,13 @@ public class EventsMod extends JavaPlugin {
         logger = getLogger();
         logger.info("Parsing scripts and configs");
 
-        config = this.getConfig();
+        FileConfiguration config = this.getConfig();
         saveDefaultConfig(); // this does NOT overwrite an existing file, thank goodness
         EventsConfig.initConfig(config);
 
         try {
             new JSParse(getDataFolder(), this.getClass().getClassLoader());
-        } catch (FileNotFoundException e) {
-            StringWriter sw = new StringWriter();
-            PrintWriter pw = new PrintWriter(sw);
-            EventsMod.logger.warning("The parser was not initialized because of an exception. Stacktrace:");
-            e.printStackTrace(pw);
-            EventsMod.logger.warning(sw.toString());
-        } catch (ScriptException e) {
+        } catch (FileNotFoundException | ScriptException e) {
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
             EventsMod.logger.warning("The parser was not initialized because of an exception. Stacktrace:");
@@ -73,28 +65,19 @@ public class EventsMod extends JavaPlugin {
     }
 
     public void runEvent() {
-        scheduler = getServer().getScheduler();
-        // this will execute a random event by calling callEvents execDays times a day
-        scheduler.scheduleSyncRepeatingTask(this, new Runnable() {
-            @Override
-            public void run() {
-                Invocable invocable = (Invocable) scriptEngine;
-                EventsMod.logger.info("Calling a random event.");
-                try {
-                    returnedFunctionName = (String) invocable.invokeFunction("callEvents");
-                } catch (ScriptException e) {
-                    StringWriter sw = new StringWriter();
-                    PrintWriter pw = new PrintWriter(sw);
-                    EventsMod.logger.warning("The event was not called because of an exception. Stacktrace:");
-                    e.printStackTrace(pw);
-                    EventsMod.logger.warning(sw.toString());
-                } catch (NoSuchMethodException e) {
-                    StringWriter sw = new StringWriter();
-                    PrintWriter pw = new PrintWriter(sw);
-                    EventsMod.logger.warning("The event was not called because of an exception. Stacktrace:");
-                    e.printStackTrace(pw);
-                    EventsMod.logger.warning(sw.toString());
-                }
+        BukkitScheduler scheduler = getServer().getScheduler();
+        // this will execute a random event by calling callEvents every execTicks ticks
+        scheduler.scheduleSyncRepeatingTask(this, () -> {
+            Invocable invocable = (Invocable) scriptEngine;
+            EventsMod.logger.info("Calling a random event.");
+            try {
+                returnedFunctionName = (String) invocable.invokeFunction("callEvents");
+            } catch (ScriptException | NoSuchMethodException e) {
+                StringWriter sw = new StringWriter();
+                PrintWriter pw = new PrintWriter(sw);
+                EventsMod.logger.warning("The event was not called because of an exception. Stacktrace:");
+                e.printStackTrace(pw);
+                EventsMod.logger.warning(sw.toString());
             }
         }, 0L, execTicks);
     }
@@ -107,7 +90,7 @@ public class EventsMod extends JavaPlugin {
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (cmd.getName().equalsIgnoreCase("runevent")) {
             if (sender instanceof Player) {
-                if (!((Player) sender).hasPermission("events.runevent")) {
+                if (!sender.hasPermission("events.runevent")) {
                     return true;
                 }
             }
@@ -145,7 +128,7 @@ public class EventsMod extends JavaPlugin {
 
         if (cmd.getName().equalsIgnoreCase("parse")) {
             if (sender instanceof Player) {
-                if (!((Player) sender).hasPermission("events.parse")) {
+                if (!sender.hasPermission("events.parse")) {
                     return true;
                 }
             }
@@ -170,21 +153,14 @@ public class EventsMod extends JavaPlugin {
 
         if (cmd.getName().equalsIgnoreCase("loadevents")) {
             if (sender instanceof Player) {
-                if (!((Player) sender).hasPermission("events.loadevents")) {
+                if (!sender.hasPermission("events.loadevents")) {
                     return true;
                 }
             }
             reloadConfig();
             try {
                 scriptEngine.eval(new FileReader(String.format("%s/%s", getDataFolder().getAbsolutePath(), EventsMod.script)));
-            } catch (ScriptException e) {
-                sender.sendMessage("The scripts could not be loaded.");
-                StringWriter sw = new StringWriter();
-                PrintWriter pw = new PrintWriter(sw);
-                EventsMod.logger.warning("The scripts weren't loaded because of an exception. Stacktrace:");
-                e.printStackTrace(pw);
-                EventsMod.logger.warning(sw.toString());
-            } catch (FileNotFoundException e) {
+            } catch (ScriptException | FileNotFoundException e) {
                 sender.sendMessage("The scripts could not be loaded.");
                 StringWriter sw = new StringWriter();
                 PrintWriter pw = new PrintWriter(sw);

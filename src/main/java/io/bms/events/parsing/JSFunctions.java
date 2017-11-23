@@ -1,8 +1,6 @@
 package io.bms.events.parsing;
 
 import io.bms.events.EventsMod;
-import io.lumine.xikage.mythicmobs.MythicMobs;
-import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Server;
@@ -16,7 +14,7 @@ public class JSFunctions {
     private static Server server;
 
     public JSFunctions(Server server) {
-        this.server = server;
+        JSFunctions.server = server;
     }
 
     public static void startRain() {
@@ -36,38 +34,6 @@ public class JSFunctions {
         }
         else {
             EventsMod.logger.warning("Could not spawn an entity because the specified world does not exist.");
-        }
-    }
-
-    public static void spawnMythicEntity(int worldID, int x, int y, int z, String entityName, int level) {
-        World world = server.getWorlds().get(worldID);
-        if (world != null) {
-            Location location = new Location(world, (double) x, (double) y, (double) z);
-            if (EventsMod.getInstance().getServer().getPluginManager().getPlugin("MythicMobs") == null) {
-                EventsMod.logger.warning("MythicMobs is not present, this feature may not be used.");
-            }
-            else {
-                ActiveMob mob = MythicMobs.inst().getMobManager().spawnMob(entityName, location, level);
-                if (mob == null) {
-                    EventsMod.logger.warning("A mythic mob with that name doesn't exist. Check for it with /mm m list.");
-                }
-                else {
-                    EventsMod.logger.info(String.format("A mythic mob called %s was spawned.", entityName));
-                }
-            }
-        }
-        else {
-            EventsMod.logger.warning("Could not spawn an entity because the specified world does not exist.");
-        }
-    }
-
-    public static void killAllMythicEntities() {
-        if (EventsMod.getInstance().getServer().getPluginManager().getPlugin("MythicMobs") == null) {
-            EventsMod.logger.warning("MythicMobs is not present, this feature may not be used.");
-        }
-        else {
-            EventsMod.logger.info("Removing all mythic mobs.");
-            MythicMobs.inst().getMobManager().despawnAllMobs();
         }
     }
 

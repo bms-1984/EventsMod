@@ -20,7 +20,7 @@ public class JSParse {
 
     public JSParse(File dataFolder, ClassLoader cl) throws FileNotFoundException, ScriptException {
         Thread.currentThread().setContextClassLoader(cl);
-        this.scriptEngine = new ScriptEngineManager(cl).getEngineByName("nashorn");
+        scriptEngine = new ScriptEngineManager(cl).getEngineByName("nashorn");
         // expose blocks to JS
         for (Material material : Material.values()) {
             scriptEngine.put(material.name(), material);
