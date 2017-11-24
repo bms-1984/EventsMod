@@ -65,7 +65,6 @@ public class JSFunctions {
 
     public static void spawnBlock(int worldID, int x, int y, int z, Material block) {
         World world = server.getWorlds().get(worldID);
-
         if (world != null) {
             Location location = new Location(world, (double) x, (double) y, (double) z);
             location.getBlock().setType(block);
